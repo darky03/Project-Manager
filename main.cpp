@@ -1,24 +1,14 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include "./includes/macros.h"
 #include "./includes/strfuncs.h"
+#include "./includes/types.h"
+#include "./includes/structures.h"
 
-#define		__CREATE_PROJECT_DIR__		"CREATE"
-#define		__PROJECT_TYPE__		"TYPE"
-#define		__PROJECT_MAIN_AUTHOR__		"AUTHOR"
-#define		__INIT_PROJECT_BUILD_FILE__	"INITB"
-#define		__DELETE_PROJECT_DIR__		"DELETE"
-
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef unsigned int uint32;
-
-typedef struct CommandArgument
-{
-	std::string CommandName;
-	uint32 Position;
-}
-CommandArgument;
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
 
 int main(int argc,char **argv)
 {
@@ -37,16 +27,41 @@ int main(int argc,char **argv)
 			if(args[i] == "-c")
 			{
 				commonArgument.CommandName = __CREATE_PROJECT_DIR__;
-				commonArgument.Position = i;
+				commonArgument.Position = i + 1;
+				std::cout << commonArgument.Position << std::endl;
 				Arguments.push_back(commonArgument);
 				continue;
 			}
 			else if(args[i] == "-d")
 			{
 				commonArgument.CommandName = __DELETE_PROJECT_DIR__;
-				commonArgument.Position = i;
+				commonArgument.Position = i + 1;
 				Arguments.push_back(commonArgument);
 				continue;
+			}
+		}
+		for(i = 0; i < Arguments.size(); i++)
+		{
+			
+			if(Arguments[i].CommandName == __CREATE_PROJECT_DIR__)
+			{
+				struct stat info;
+				extra = "./"+std::string(argv[Arguments[i].Position + 1]);
+				if(info.st_mode & S_IFDIR)
+				{
+					std::cerr << " Project Directory already exists! " << std::endl;
+					return -1;
+				}
+				else
+				{
+					mkdir(extra.c_str(),0777);		
+					//std::cout << "Directory: " << extra << std::endl;
+
+				}
+				continue;
+			}
+			else if(Arguments[i].CommandName == __DELETE_PROJECT_DIR__)
+			{
 			}
 		}
 		
