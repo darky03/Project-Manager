@@ -8,3 +8,11 @@ typedef struct CommandArgument
 }
 CommandArgument;
 
+
+typedef struct KeyValueString
+{
+	std::string key;
+	std::string value;
+}
+KeyValueString;
+
