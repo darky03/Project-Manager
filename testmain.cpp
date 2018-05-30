@@ -4,12 +4,16 @@
 
 int main()
 {
-//	INI mini("test.ini",true);
-	int total;
+	int total,total2;
 	std::string * split = strfuncs::strsplit("PHP=>>>php,php5,php7",total,"=>>>");
+	std::string * split2 = strfuncs::strsplit(split[1],total2,',');
 	for(int i = 0; i < total; i++)
 	{
 		std::cout << split[i] << std::endl;
+	}
+	for(int i = 0; i < total2; i++)
+	{
+		std::cout << split2[i] << std::endl;
 	}
 	std::string trimstring = "           This string will be trimmed           ";
 	std::cout << strfuncs::trim(trimstring) << std::endl;

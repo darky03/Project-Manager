@@ -1,4 +1,7 @@
 #pragma once
+#include <vector>
+#include "types.h"
+
 
 typedef struct CommandArgument
 {
@@ -15,4 +18,11 @@ typedef struct KeyValueString
 	std::string value;
 }
 KeyValueString;
+
+typedef struct AssocStructure
+{
+	std::vector<std::string>assocs;
+	std::vector<std::string>keys;
+}
+AssocStructure;
 
