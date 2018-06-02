@@ -13,8 +13,49 @@ class strfuncs
 		static std::string replace(const std::string &str,const std::string &repstr,const std::string &sub);
 		static std::string remove(const std::string &str,const std::string &remstr);
 		static std::string toupper(const std::string &str);
+		static int find(const std::string &str,const std::string &seq);
+
 		static char toupper(const char s);
 };
+int strfuncs::find(const std::string &str,const std::string &seq)
+{
+	int i, j;
+	int total = 0;
+	bool complete = false;
+	for(i = 0; i < str.length(); i++)
+	{
+		complete = false;
+		if(str[i] == seq[0] && seq.length() == 1) 
+		{
+			total++;
+			continue;
+		}
+		if(str[i] == seq[0])
+		{
+			if((i + seq.length()) > str.length()) continue;
+			for(j = 1; j < seq.length(); j++)
+			{
+				if(seq[j] == str[i+j])
+				{
+					complete = true;
+					continue;
+				}
+				else
+				{
+					complete = false;
+					break;
+				}
+			}
+			if(complete)
+			{
+				i += seq.length();
+				total++;
+			}
+		}	
+	}
+	return total;
+}
+		
 char strfuncs::toupper(const char s)
 {
 	if(s >= 'a' && s <= 'z')

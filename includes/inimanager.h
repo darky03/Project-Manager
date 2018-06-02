@@ -48,7 +48,7 @@ class INI : public File
 		}
 		int FindKey(const std::string &key)
 		{
-			for(int i = 0; i < keys.length(); i++)
+			for(int i = 0; i < keys.size(); i++)
 			{
 				if(keys[i].key == key)
 				{
@@ -61,10 +61,62 @@ class INI : public File
 		INI();
 		INI(const std::string &fp,bool forcecreate = false);
 		void WriteKey(const std::string &key, const std::string &value);		
+		std::string ReadKey(const std::string &key);
+		void WriteKeyInt(const std::string &key,int value);
+		void WriteKeyFloat(const std::string &key,float value);
+		void WriteKeyBool(const std::string &key,bool value);
+		bool ReadKeyBool(const std::string &key);
+		int ReadKeyInt(const std::string &key);
+		float ReadKeyFloat(const std::string &key);
 		~INI();
 };
 INI::INI()
 {
+}
+void INI::WriteKeyBool(const std::string &key,bool value)
+{
+	if(value == true)
+		WriteKey(key,"true");
+	else 
+		WriteKey(key,"false");
+}
+void INI::WriteKeyFloat(const std::string &key,float value)
+{
+	WriteKey(key,std::to_string(value));
+}
+float INI::ReadKeyFloat(const std::string &key)
+{
+	return std::atof(ReadKey(key).c_str());
+}
+void INI::WriteKeyInt(const std::string &key,int value)
+{
+	WriteKey(key,std::to_string(value));
+}
+bool INI::ReadKeyBool(const std::string &key)
+{
+	int k = FindKey(key);
+	if(k != -1)
+	{
+		if(keys[k].value == "true")
+			return true;
+		else if(keys[k].value == "false")
+			return false;
+		else return false;
+	}
+	return false;
+}
+int INI::ReadKeyInt(const std::string &key)
+{
+	return std::atoi(ReadKey(key).c_str());
+}
+std::string INI::ReadKey(const std::string &key)
+{
+	int k = FindKey(key);
+	if(k != -1)
+	{
+		return keys[k].value;
+	}
+	return "";
 }
 void INI::WriteKey(const std::string &key,const std::string &value)
 {
@@ -72,6 +124,13 @@ void INI::WriteKey(const std::string &key,const std::string &value)
 	if(k != -1)
 	{
 		keys[k].value = value;
+		RewriteChanges();
+	}
+	else{
+		KeyValueString newkey;
+		newkey.key = key;
+		newkey.value = value;
+		keys.push_back(newkey);
 		RewriteChanges();
 	}
 }

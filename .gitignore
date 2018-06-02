@@ -1,5 +1,7 @@
 main
 testmain
 *.ini
+*.swp
+*.txt
 *.sh
-
+makefile

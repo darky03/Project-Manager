@@ -9,6 +9,8 @@
 #include <string.h>
 #include <errno.h>
 
+#include "./includes/projectfile.h"
+#include "./includes/fileinc.h"
 #include "./includes/macros.h"
 #include "./includes/strfuncs.h"
 #include "./includes/types.h"
@@ -20,7 +22,7 @@ int main(int argc,char **argv)
 {
 	CheckAppDirAndCreate();
 	
-	std::string extra; // Extra for holding the string color
+	std::string extra[2]; // Extra for holding the string color
 	CommandArgument commonArgument;
 	std::vector<CommandArgument> Arguments;
 	std::vector<std::string> args;
@@ -35,7 +37,13 @@ int main(int argc,char **argv)
 			{
 				commonArgument.CommandName = __CREATE_PROJECT_DIR__;
 				commonArgument.Position = i + 1;
-				std::cout << commonArgument.Position << std::endl;
+				Arguments.push_back(commonArgument);
+				continue;
+			}
+			else if(args[i] == "-t")
+			{
+				commonArgument.CommandName = __PROJECT_TYPE__;
+				commonArgument.Position = i + 1;
 				Arguments.push_back(commonArgument);
 				continue;
 			}
@@ -52,17 +60,47 @@ int main(int argc,char **argv)
 			
 			if(Arguments[i].CommandName == __CREATE_PROJECT_DIR__)
 			{
-				struct stat info;
-				extra = "./"+std::string(argv[Arguments[i].Position + 1]);
-				stat(extra.c_str(),&info);
-				if(info.st_mode & S_IFDIR)
+				
+				extra[0] = "./"+std::string(argv[Arguments[i].Position + 1]);
+				extra[1] = extra[0];
+				if(!File::DirectoryExists(extra[0]))
 				{
-					std::cerr << " Project Directory already exists! " << std::endl;
-					return -1;
+					mkdir(extra[0].c_str(),0777);		
 				}
-				else
+				else std::cout << "Directory already exists! " << std::endl;
+				continue;
+			}
+			else if(Arguments[i].CommandName == __PROJECT_TYPE__)
+			{
+				extra[0] = std::string(argv[Arguments[i].Position + 1]);
+				uint8 filetype = -1;
+				
+				if(extra[0] == __PROJECT_TYPE_CPP__)
 				{
-				mkdir(extra.c_str(),0777);		
+					if(File::DirectoryExists(extra[1]))	
+					{
+						filetype = __PROJECT_TTYPE_CPP__;
+					}
+				}
+				else if(extra[0] == __PROJECT_TYPE_C__)
+				{
+					if(File::DirectoryExists(extra[1]))	
+					{
+						filetype = __PROJECT_TTYPE_C__;
+					}
+				}
+				else if(extra[0] == __PROJECT_TYPE_PHP__)
+				{
+					if(File::DirectoryExists(extra[1]))	
+					{
+						filetype = __PROJECT_TTYPE_PHP__;	
+					}
+				
+				}
+				if(filetype != -1)
+				{
+					ProjectFile pf(filetype,extra[1]);
+					pf.Init();
 				}
 				continue;
 			}
@@ -93,13 +131,7 @@ void CheckAppDirAndCreate()
 	{
 		struct passwd *pw = getpwuid(getuid());
 		std::string dirpath = std::string(pw->pw_dir)+"/.projectmanager";
-//		std::cout << dirpath << std::endl;
 		int dir= mkdir(dirpath.c_str(),0777);
-		if(dir < 0) {
-			std::cout << strerror(errno) << std::endl;
-			exit(0);
-		}
-
+	
 	}
 }
-
